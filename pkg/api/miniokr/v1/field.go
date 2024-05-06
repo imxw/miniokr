@@ -25,7 +25,7 @@ type KeyResultField struct {
 	Reason      string `json:"Reason" field:"fld6OsYad8"`
 }
 
-// FieldMappingsResponse 指定了 `POST /api/v1/fields` 接口的返回参数
+// FieldMappingsResponse 指定了 `POST /api/v1/fields` 接口的返回参数.
 type FieldMappingsResponse struct {
 	Objective ObjectiveField `json:"objective"`
 	KeyResult KeyResultField `json:"keyResult"`

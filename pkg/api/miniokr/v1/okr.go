@@ -5,15 +5,15 @@
 
 package v1
 
-// ListOkrResquest 指定了 `GET|POST /api/v1/okrs` 接口的请求参数
+// ListOkrResquest 指定了 `GET|POST /api/v1/okrs` 接口的请求参数.
 type ListOkrRequest struct {
-	//Username string   `form:"username"`
+	// Username string   `form:"username"`
 	Months  []string `json:"months" form:"months" binding:"omitempty,dive,monthYearFormat"`
 	SortBy  string   `json:"sortBy" form:"sortBy" binding:"omitempty"`
 	OrderBy string   `json:"orderBy" form:"orderBy" binding:"omitempty"`
 }
 
-// ListOkrResponse 指定了 `GET|POST /api/v1/okrs` 接口的返回参数
+// ListOkrResponse 指定了 `GET|POST /api/v1/okrs` 接口的返回参数.
 type ListOkrResponse struct {
 	Okrs map[string][]Objective `json:"okrs"`
 }
