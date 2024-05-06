@@ -1,4 +1,4 @@
-module github.com/xwlearn/miniokr
+module github.com/imxw/miniokr
 
 go 1.21.5
 

@@ -1,7 +1,7 @@
 // Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/xwlearn/miniokr.
+// this file is https://github.com/imxw/miniokr.
 
 package token
 
@@ -13,7 +13,7 @@ import (
 	lark "github.com/larksuite/oapi-sdk-go/v3"
 	larkauth "github.com/larksuite/oapi-sdk-go/v3/service/auth/v3"
 
-	"github.com/xwlearn/miniokr/internal/pkg/log"
+	"github.com/imxw/miniokr/internal/pkg/log"
 )
 
 type LarkTokenService struct {

@@ -1,7 +1,7 @@
 // Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/xwlearn/miniokr.
+// this file is https://github.com/imxw/miniokr.
 
 package auth
 
@@ -12,9 +12,9 @@ import (
 	"github.com/zhaoyunxing92/dingtalk/v2"
 	"github.com/zhaoyunxing92/dingtalk/v2/request"
 
-	"github.com/xwlearn/miniokr/internal/pkg/errno"
-	"github.com/xwlearn/miniokr/internal/pkg/log"
-	"github.com/xwlearn/miniokr/pkg/token"
+	"github.com/imxw/miniokr/internal/pkg/errno"
+	"github.com/imxw/miniokr/internal/pkg/log"
+	"github.com/imxw/miniokr/pkg/token"
 )
 
 type Config struct {

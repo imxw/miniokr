@@ -1,7 +1,7 @@
 // Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/xwlearn/miniokr.
+// this file is https://github.com/imxw/miniokr.
 
 // Package log is a log package used by miniokr project.
 package log
@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/xwlearn/miniokr/internal/pkg/known"
+	"github.com/imxw/miniokr/internal/pkg/known"
 )
 
 // Logger 定义了 miniokr 项目的日志接口. 该接口只包含了支持的日志记录方法.

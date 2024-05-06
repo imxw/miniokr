@@ -1,7 +1,7 @@
 // Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/xwlearn/miniokr.
+// this file is https://github.com/imxw/miniokr.
 
 package miniokr
 
@@ -22,20 +22,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	ac "github.com/xwlearn/miniokr/internal/miniokr/controller/v1/auth"
-	fc "github.com/xwlearn/miniokr/internal/miniokr/controller/v1/field"
-	oc "github.com/xwlearn/miniokr/internal/miniokr/controller/v1/okr"
-	"github.com/xwlearn/miniokr/internal/miniokr/services/auth"
-	fs "github.com/xwlearn/miniokr/internal/miniokr/services/field"
-	okrs "github.com/xwlearn/miniokr/internal/miniokr/services/okr"
-	"github.com/xwlearn/miniokr/internal/pkg/bitable"
-	"github.com/xwlearn/miniokr/internal/pkg/bitable/field"
-	larkToken "github.com/xwlearn/miniokr/internal/pkg/bitable/token"
-	"github.com/xwlearn/miniokr/internal/pkg/known"
-	"github.com/xwlearn/miniokr/internal/pkg/log"
-	mw "github.com/xwlearn/miniokr/internal/pkg/middleware"
-	"github.com/xwlearn/miniokr/pkg/token"
-	"github.com/xwlearn/miniokr/pkg/version/verflag"
+	ac "github.com/imxw/miniokr/internal/miniokr/controller/v1/auth"
+	fc "github.com/imxw/miniokr/internal/miniokr/controller/v1/field"
+	oc "github.com/imxw/miniokr/internal/miniokr/controller/v1/okr"
+	"github.com/imxw/miniokr/internal/miniokr/services/auth"
+	fs "github.com/imxw/miniokr/internal/miniokr/services/field"
+	okrs "github.com/imxw/miniokr/internal/miniokr/services/okr"
+	"github.com/imxw/miniokr/internal/pkg/bitable"
+	"github.com/imxw/miniokr/internal/pkg/bitable/field"
+	larkToken "github.com/imxw/miniokr/internal/pkg/bitable/token"
+	"github.com/imxw/miniokr/internal/pkg/known"
+	"github.com/imxw/miniokr/internal/pkg/log"
+	mw "github.com/imxw/miniokr/internal/pkg/middleware"
+	"github.com/imxw/miniokr/pkg/token"
+	"github.com/imxw/miniokr/pkg/version/verflag"
 )
 
 var cfgFile string
@@ -51,7 +51,7 @@ func NewMiniOkrCommand() *cobra.Command {
 		Long: `A good Go practical project, used to create user with basic information.
 
 Find more miniokr information at:
-	https://github.com/xwlearn/miniokr#readme`,
+	https://github.com/imxw/miniokr#readme`,
 
 		// 命令出错时，不打印帮助信息。不需要打印帮助信息，设置为 true 可以保持命令出错时一眼就能看到错误信息
 		SilenceUsage: true,

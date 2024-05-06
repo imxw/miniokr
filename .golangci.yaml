@@ -135,7 +135,7 @@ linters-settings:
     # only support one prefix
     # if not set, use goimports.local-prefixes
     sections:
-      - prefix(github.com/xwlearn/miniokr)
+      - prefix(github.com/imxw/miniokr)
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 30
@@ -258,14 +258,14 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: github.com/xwlearn/miniokr
+    local-prefixes: github.com/imxw/miniokr
   gomoddirectives:
     # Allow local `replace` directives. Default is false.
     replace-local: true
     # List of allowed `replace` directives. Default is empty.
     replace-allow-list:
       - google.golang.org/grpc
-      - github.com/xwlearn/miniokr
+      - github.com/imxw/miniokr
 
     # Allow to not explain why the version has been retracted in the `retract` directives. Default is false.
     retract-allow-no-explanation: false

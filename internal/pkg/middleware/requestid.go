@@ -1,7 +1,7 @@
 // Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file. The original repo for
-// this file is https://github.com/xwlearn/miniokr.
+// this file is https://github.com/imxw/miniokr.
 
 package middleware
 
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/xwlearn/miniokr/internal/pkg/known"
+	"github.com/imxw/miniokr/internal/pkg/known"
 )
 
 // RequestID 是一个 Gin 中间件，用来在每一个 HTTP 请求的 context, response 中注入 `X-Request-ID` 键值对.

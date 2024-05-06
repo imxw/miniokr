@@ -68,3 +68,4 @@ config/miniokr.yaml
 *.json
 .DS_Store
 /.idea
+/deployment
