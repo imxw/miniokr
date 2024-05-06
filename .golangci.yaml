@@ -255,14 +255,6 @@ linters-settings:
     # simplify code: gofmt with `-s` option, true by default
     simplify: true
 
-  gofumpt:
-    # Select the Go version to target. The default is `1.15`.
-    lang-version: "1.15"
-
-    # Choose whether or not to use the extra rules that are disabled
-    # by default
-    extra-rules: false
-
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
@@ -340,8 +332,6 @@ linters-settings:
         truncate: "32"
 
   gosimple:
-    # Select the Go version to target. The default is '1.13'.
-    go: "1.15"
     # https://staticcheck.io/docs/options#checks
     checks: [ "all" ]
 
@@ -481,15 +471,10 @@ linters-settings:
       - name: indent-error-flow
         severity: warning
   staticcheck:
-    # Select the Go version to target. The default is '1.13'.
-    go: "1.21"
     # https://staticcheck.io/docs/options#checks
     checks: [ "all" ]
 
   stylecheck:
-    # Select the Go version to target. The default is '1.13'.
-    go: "1.21"
-
     # https://staticcheck.io/docs/options#checks
     checks: [ "all", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022" ]
     # https://staticcheck.io/docs/options#dot_import_whitelist

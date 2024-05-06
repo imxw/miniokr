@@ -2,8 +2,6 @@ module github.com/xwlearn/miniokr
 
 go 1.21.5
 
-replace github.com/xwlearn/miniokr/internal/pkg/known => ./internal/pkg/known
-
 require (
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/gosuri/uitable v0.0.4
