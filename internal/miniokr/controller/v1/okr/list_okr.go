@@ -128,6 +128,7 @@ func (ctrl *Controller) validateMonths(reqMonths []string) ([]string, error) {
 	} else {
 		months = intersectStrings(recentMonths, months)
 	}
+
 	if len(months) == 0 {
 		return nil, fmt.Errorf("只允许获取数据的月份: %v", recentMonths)
 	}
@@ -207,6 +208,9 @@ func convertToV1KeyResult(kr model.KeyResult) v1.KeyResult {
 		SelfRating:       kr.SelfRating,
 		Reason:           kr.Reason,
 		ObjectiveID:      kr.ObjectiveID,
+		Leader:           kr.Leader,
+		LeaderRating:     kr.LeaderRating,
+		Department:       kr.Department,
 		Criteria:         kr.Criteria,
 		CreatedTime:      kr.CreatedTime,
 		LastModifiedTime: kr.LastModifiedTime,

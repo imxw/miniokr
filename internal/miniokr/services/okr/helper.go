@@ -24,9 +24,10 @@ func convertToObjective(data []*larkbitable.AppTableRecord, of *v1.ObjectiveFiel
 			continue // Skip record without a valid RecordId
 		}
 		fields := record.Fields
+
 		objective := model.Objective{
 			ID:               OPrefix + *record.RecordId,
-			Owner:            extractString(fields, of.Owner),
+			Owner:            extractText(fields[of.Owner].([]interface{})),
 			Date:             extractString(fields, of.Date),
 			Weight:           extractFloatToInt(fields, of.Weight),
 			KrsIds:           extractRecordIDs(fields, of.KeyResultIDs, KrPrefix),
@@ -82,11 +83,14 @@ func convertToKeyResult(data []*larkbitable.AppTableRecord, of *v1.KeyResultFiel
 			Completed:        extractString(fields, of.Completed),
 			ObjectiveID:      objectiveID,
 			Criteria:         extractAllTexts(criteria),
-			SelfRating:       extractFloatToInt(fields, of.SelfRating) / 100,
+			SelfRating:       extractRating(fields, of.SelfRating),
 			Reason:           extractAllTexts(reason),
 			CreatedTime:      safeInt64(record.CreatedTime),
 			LastModifiedTime: safeInt64(record.LastModifiedTime),
 			Title:            extractText(title),
+			LeaderRating:     extractRating(fields, of.LeaderRating),
+			Department:       extractFirstDepartment(fields, of.Department),
+			Leader:           extractLeaderName(fields, of.Leader),
 		}
 
 		krs = append(krs, kr)
@@ -104,6 +108,15 @@ func extractText(value []interface{}) string {
 		}
 	}
 	return ""
+}
+
+func extractRating(fields map[string]interface{}, key string) *int {
+	if value, ok := fields[key].(float64); ok {
+		rating := int(value*100) / 100
+		return &rating
+	}
+
+	return nil
 }
 
 func extractAllTexts(items []interface{}) string {
@@ -146,6 +159,39 @@ func extractFloatToInt(fields map[string]interface{}, key string) int {
 		return int(value * 100)
 	}
 	return 0
+}
+
+func extractFirstDepartment(fields map[string]interface{}, key string) string {
+	if nestedMap, ok := fields[key].(map[string]interface{}); ok {
+		if ds, ok := nestedMap["value"].([]interface{}); ok {
+			if len(ds) > 0 {
+				if strD, ok := ds[0].(string); ok {
+					return strD
+				}
+			}
+		}
+	}
+	return "" // 如果遇到任何问题，返回空字符串
+}
+
+func extractLeaderName(data map[string]interface{}, key string) string {
+	// 获取 key 对应的值，假设它是一个 map 类型
+	if nestedMap, ok := data[key].(map[string]interface{}); ok {
+		// 获取 "value" 对应的切片，假设它是 []interface{} 类型
+		if values, ok := nestedMap["value"].([]interface{}); ok {
+			// 检查切片至少有一个元素
+			if len(values) > 0 {
+				// 假设第一个元素是一个 map 类型，且包含 "name" 键
+				if leaderInfo, ok := values[0].(map[string]interface{}); ok {
+					// 从 leaderInfo 中获取 "name"，假设它是 string 类型
+					if name, ok := leaderInfo["name"].(string); ok {
+						return name
+					}
+				}
+			}
+		}
+	}
+	return "" // 如果任何步骤失败，返回空字符串
 }
 
 func safeInt64(ptr *int64) int64 {

@@ -148,9 +148,9 @@ func (m *Manager) fieldMapping(ctx context.Context, tableID string) ([]Field, er
 	var fields []Field
 	for _, item := range resp.Data.Items {
 		// Skip computed fields
-		if *item.Type == 19 || *item.Type == 20 {
-			continue
-		}
+		// if *item.Type == 19 || *item.Type == 20 {
+		// 	continue
+		// }
 
 		// Ensure both field ID and name are present
 		if item.FieldId != nil && item.FieldName != nil {

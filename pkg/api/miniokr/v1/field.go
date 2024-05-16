@@ -14,15 +14,18 @@ type ObjectiveField struct {
 }
 
 type KeyResultField struct {
-	Title       string `json:"title" field:"fldrxgL9LV"`
-	Owner       string `json:"owner" field:"fldjEZmY3S"`
-	Date        string `json:"date" field:"fldnMxJlKj"`
-	Weight      string `json:"weight" field:"fld5HXzwmN"`
-	Completed   string `json:"completed" field:"fldG2nSDTZ"`
-	SelfRating  string `json:"selfRating" field:"fldvjvtxRr"`
-	Criteria    string `json:"criteria" field:"fldPGxpg2b"`
-	ObjectiveID string `json:"objectiveId" field:"fldW8TFesB"`
-	Reason      string `json:"Reason" field:"fld6OsYad8"`
+	Title        string `json:"title" field:"fldrxgL9LV"`
+	Owner        string `json:"owner" field:"fldjEZmY3S"`
+	Date         string `json:"date" field:"fldnMxJlKj"`
+	Weight       string `json:"weight" field:"fld5HXzwmN"`
+	Completed    string `json:"completed" field:"fldG2nSDTZ"`
+	SelfRating   string `json:"selfRating" field:"fldvjvtxRr"`
+	Criteria     string `json:"criteria" field:"fldPGxpg2b"`
+	ObjectiveID  string `json:"objectiveId" field:"fldW8TFesB"`
+	Reason       string `json:"reason" field:"fld6OsYad8"`
+	Leader       string `json:"leader" field:"fldfPqFgwt"`
+	LeaderRating string `json:"leaderRating" field:"fld6x4tz0t"`
+	Department   string `json:"department" field:"fldeDq4odj"`
 }
 
 // FieldMappingsResponse 指定了 `POST /api/v1/fields` 接口的返回参数.

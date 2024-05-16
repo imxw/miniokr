@@ -1,9 +1,0 @@
-/**
- * Copyright 2024 Roy(徐武) <ixw1991@126.com>. All rights reserved.
- * Use of this source code is governed by a MIT style
- * license that can be found in the LICENSE file. The original repo for
- * this file is https://github.com/imxw/miniokr.
- */
-
-.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion:no-preference){.App-logo{animation:App-logo-spin 20s linear infinite}}.App-header{align-items:center;background-color:#282c34;color:#fff;display:flex;flex-direction:column;font-size:calc(10px + 2vmin);justify-content:center;min-height:100vh}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.full-spin{align-items:center;background:#fffc;bottom:0;display:flex;justify-content:center;left:0;position:absolute;right:0;top:0;z-index:1000}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;margin:0}code{font-family:source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace}
-/*# sourceMappingURL=main.aa3b49cc.css.map*/

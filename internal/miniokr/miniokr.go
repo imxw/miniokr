@@ -97,10 +97,6 @@ Find more miniokr information at:
 
 // run 函数是实际的业务代码入口函数.
 func run() error {
-	// TODO:初始化 store 层
-	// if err := initStore(); err != nil {
-	// 	return err
-	// }
 	// 初始化钉钉服务
 	as, err := auth.NewDingTalkAuthService(auth.Config{
 		ClientId:     viper.GetString("dingtalk.client-id"),
@@ -172,7 +168,6 @@ func run() error {
 
 	g.Use(mws...)
 
-	// TODO: 初始化路由
 	if err := installRouters(g, container); err != nil {
 		return err
 	}

@@ -12,10 +12,13 @@ type KeyResult struct {
 	Owner            string `json:"owner"`
 	Date             string `json:"date"`
 	Completed        string `json:"completed"`
-	SelfRating       int    `json:"selfRating"`
+	SelfRating       *int   `json:"selfRating"`
 	Reason           string `json:"reason"`
 	ObjectiveID      string `json:"objectiveID"`
 	Criteria         string `json:"criteria"`
+	Leader           string `json:"leader"`
+	LeaderRating     *int   `json:"leaderRating"`
+	Department       string `json:"department"`
 	CreatedTime      int64  `json:"createdTime"`
 	LastModifiedTime int64  `json:"lastModifiedTime"`
 }

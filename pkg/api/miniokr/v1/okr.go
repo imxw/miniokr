@@ -36,10 +36,13 @@ type KeyResult struct {
 	Owner            string `json:"owner"`
 	Date             string `json:"date"`
 	Completed        string `json:"completed"`
-	SelfRating       int    `json:"selfRating"`
+	SelfRating       *int   `json:"selfRating"`
 	Reason           string `json:"reason"`
 	ObjectiveID      string `json:"objectiveID"`
 	Criteria         string `json:"criteria"`
+	Leader           string `json:"leader"`
+	LeaderRating     *int   `json:"leaderRating"`
+	Department       string `json:"department"`
 	CreatedTime      int64  `json:"createdTime"`
 	LastModifiedTime int64  `json:"lastModifiedTime"`
 }
@@ -61,8 +64,8 @@ type CreateOrUpdateKeyResult struct {
 	Title       string `json:"title" binding:"required"`
 	Weight      int    `json:"weight" binding:"required,min=1,max=100"`
 	Date        string `json:"date" binding:"required,monthYearFormat"`
-	Completed   string `json:"completed" binding:"required,oneof=已完成 未完成"`
-	SelfRating  int    `json:"selfRating" binding:"required,min=1,max=100"`
+	Completed   string `json:"completed" binding:"required,oneof=未开始 已完成 未完成"`
+	SelfRating  *int   `json:"selfRating" binding:"omitempty,min=0,max=120"`
 	Reason      string `json:"reason" binding:"omitempty"`
 	ObjectiveID string `json:"objectiveID" binding:"omitempty"`
 	Criteria    string `json:"criteria" binding:"omitempty"`
