@@ -7,7 +7,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.24.0
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/gosuri/uitable v0.0.4
-	golang.org/x/crypto v0.19.0
+	golang.org/x/crypto v0.21.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gorm v1.25.10
 )
@@ -61,7 +61,7 @@ require (
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
-	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -94,5 +94,5 @@ require (
 	github.com/zhaoyunxing92/dingtalk/v2 v2.1.1
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.27.0
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 )
