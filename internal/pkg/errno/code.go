@@ -27,6 +27,12 @@ var (
 	// ErrTokenInvalid 表示 JWT Token 格式错误.
 	ErrTokenInvalid = &Errno{HTTP: 401, Code: "AuthFailure.TokenInvalid", Message: "Token was invalid."}
 
-	// ErrUnauthorized 表示请求没有被授权.
+	// ErrUnauthorized 表示请求没有被认证.
 	ErrUnauthorized = &Errno{HTTP: 401, Code: "AuthFailure.Unauthorized", Message: "Unauthorized."}
+
+	// ErrForbidden 表示请求没有被授权.
+	ErrForbidden = &Errno{HTTP: 403, Code: "AuthFailure.Forbidden", Message: "Forbidden."}
+
+	// ErrUserNotFound 标识用户没有找到
+	ErrUserNotFound = &Errno{HTTP: 404, Code: "ResourceNotFound.UserNotFound", Message: "User not found."}
 )

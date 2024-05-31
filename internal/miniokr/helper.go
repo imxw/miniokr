@@ -14,8 +14,14 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/zhaoyunxing92/dingtalk/v2"
+	"gorm.io/gorm"
 
+	"github.com/imxw/miniokr/internal/miniokr/services/notify"
+	"github.com/imxw/miniokr/internal/miniokr/services/sync"
+	"github.com/imxw/miniokr/internal/miniokr/store"
 	"github.com/imxw/miniokr/internal/pkg/log"
+	"github.com/imxw/miniokr/pkg/db"
 )
 
 const (
@@ -91,4 +97,68 @@ func monthYearFormat(fl validator.FieldLevel) bool {
 		}
 	}
 	return true
+}
+
+// initDingTalkClient 初始化钉钉客户端
+func initDingTalkClient() (*dingtalk.DingTalk, error) {
+	clientID := viper.GetString("dingtalk.client-id")
+	clientSecret := viper.GetString("dingtalk.client-secret")
+	return dingtalk.NewClient(clientID, clientSecret)
+}
+
+// initStore 读取 db 配置，创建 gorm.DB 实例，并初始化 miniblog store 层.
+func initStore() (*gorm.DB, error) {
+	dbOptions := &db.MySQLOptions{
+		Host:                  viper.GetString("db.host"),
+		Username:              viper.GetString("db.username"),
+		Password:              viper.GetString("db.password"),
+		Database:              viper.GetString("db.database"),
+		MaxIdleConnections:    viper.GetInt("db.max-idle-connections"),
+		MaxOpenConnections:    viper.GetInt("db.max-open-connections"),
+		MaxConnectionLifeTime: viper.GetDuration("db.max-connection-life-time"),
+		LogLevel:              viper.GetInt("db.log-level"),
+	}
+
+	ins, err := db.NewMySQL(dbOptions)
+	if err != nil {
+		return nil, err
+	}
+	storeInstance := store.NewStore(ins)
+
+	// 自动迁移
+	if err := storeInstance.AutoMigrate(); err != nil {
+		return nil, err
+	}
+
+	// // 初始化角色
+	// if err := storeInstance.InitRoles(); err != nil {
+	// 	return err
+	// }
+
+	// // 初始化用户角色表
+	// if err := storeInstance.InitUserRoles(); err != nil {
+	// 	return err
+	// }
+
+	return storeInstance.DB(), nil
+}
+
+// initSyncService 初始化同步服务
+func initSyncService(db *gorm.DB, dingClient *dingtalk.DingTalk) (*sync.SyncService, error) {
+
+	webhook := viper.GetString("dingtalk.webhook-url")
+	excludeDeptId := viper.GetInt("dingtalk.excludeDeptId")
+	// 初始化通知器
+	dingNotifier := notify.NewDingTalkNotifier(webhook)
+
+	// 初始化存储
+	syncStore := store.NewSyncStore(db)
+
+	// 排除的部门ID列表
+	excludeDeptIDs := map[int]bool{excludeDeptId: true}
+
+	// 创建同步服务实例
+	syncService := sync.NewSyncService(dingClient, syncStore, dingNotifier, excludeDeptIDs)
+
+	return syncService, nil
 }

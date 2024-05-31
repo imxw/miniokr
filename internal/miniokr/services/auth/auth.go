@@ -15,9 +15,9 @@ type Authenticator interface {
 }
 
 type TokenIssuer interface {
-	IssueToken(ctx context.Context, username string) (string, error)
+	IssueToken(ctx context.Context, userid string, username string) (string, error)
 }
 
 type UserFetcher interface {
-	Fetch(ctx context.Context, code string) (string, error)
+	Fetch(ctx context.Context, code string) (string, string, error)
 }

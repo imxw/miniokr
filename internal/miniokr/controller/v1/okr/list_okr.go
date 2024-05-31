@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	ctrlV1 "github.com/imxw/miniokr/internal/miniokr/controller/v1"
 	"github.com/imxw/miniokr/internal/pkg/bitable"
 	"github.com/imxw/miniokr/internal/pkg/core"
 	"github.com/imxw/miniokr/internal/pkg/errno"
@@ -35,7 +36,14 @@ func (ctrl *Controller) ListOkrByUsernameAndMonths(c *gin.Context) {
 		return
 	}
 
-	username, ok := c.MustGet(known.XUsernameKey).(string)
+	var owner string
+
+	// username, ok := c.MustGet(known.XUsernameKey).(string)
+	// if !ok {
+	// 	core.WriteResponse(c, errno.InternalServerError, nil)
+	// 	return
+	// }
+	userID, ok := c.MustGet(known.XUserIDKey).(string)
 	if !ok {
 		core.WriteResponse(c, errno.InternalServerError, nil)
 		return
@@ -47,13 +55,28 @@ func (ctrl *Controller) ListOkrByUsernameAndMonths(c *gin.Context) {
 	// 	return
 	// }
 
-	months, err := ctrl.validateMonths(req.Months)
-	if err != nil {
-		core.WriteResponse(c, err, nil)
-		return
+	//months, err := ctrl.validateMonths(req.Months)
+	//if err != nil {
+	//	core.WriteResponse(c, err, nil)
+	//	return
+	//}
+
+	if req.UserID != "" {
+		// 请求他人资源需要鉴权
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserID, ctrl.us) {
+			return
+		}
+		owner = req.UserID
+	} else {
+		owner = userID
 	}
 
-	objData, krData, err := ctrl.fetchData(c, username, req.SortBy, req.OrderBy)
+	objData, krData, err := ctrl.fetchData(c, owner, req.SortBy, req.OrderBy)
 	if err != nil {
 
 		if errors.Is(err, bitable.ErrInvalidUser) {
@@ -61,7 +84,7 @@ func (ctrl *Controller) ListOkrByUsernameAndMonths(c *gin.Context) {
 				Okrs: make(map[string][]v1.Objective),
 			}
 
-			for _, month := range months {
+			for _, month := range req.Months {
 				emptyRes.Okrs[month] = []v1.Objective{}
 			}
 
@@ -73,7 +96,7 @@ func (ctrl *Controller) ListOkrByUsernameAndMonths(c *gin.Context) {
 		return
 	}
 
-	okrResponse := ctrl.constructResponse(months, objData, krData)
+	okrResponse := ctrl.constructResponse(req.Months, objData, krData)
 	core.WriteResponse(c, nil, okrResponse)
 }
 
@@ -100,7 +123,7 @@ func (ctrl *Controller) prepareUserAndMonths(c *gin.Context) (string, []string, 
 		return "", nil, err
 	}
 
-	if !Contains(legalUsers, username) {
+	if !ctrlV1.Contains(legalUsers, username) {
 		return "", nil, errors.New("用户不合法")
 	}
 
@@ -136,12 +159,18 @@ func (ctrl *Controller) validateMonths(reqMonths []string) ([]string, error) {
 	return months, nil
 }
 
-func (ctrl *Controller) fetchData(c *gin.Context, username string, sortBy string, orderBy string) ([]model.Objective, []model.KeyResult, error) {
-	objData, err := ctrl.os.ListObjectivesByOwner(c, username, sortBy, orderBy)
+func (ctrl *Controller) fetchData(c *gin.Context, userid string, sortBy string, orderBy string) ([]model.Objective, []model.KeyResult, error) {
+
+	user, err := ctrl.us.GetUserByID(c, userid)
 	if err != nil {
 		return nil, nil, err
 	}
-	krData, err := ctrl.os.ListKeyResultsByOwner(c, username, sortBy, orderBy)
+
+	objData, err := ctrl.os.ListObjectivesByOwner(c, user.Name, sortBy, orderBy)
+	if err != nil {
+		return nil, nil, err
+	}
+	krData, err := ctrl.os.ListKeyResultsByOwner(c, user.Name, sortBy, orderBy)
 
 	if err != nil {
 		return nil, nil, err

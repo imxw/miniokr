@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	ctrlV1 "github.com/imxw/miniokr/internal/miniokr/controller/v1"
 	"github.com/imxw/miniokr/internal/pkg/core"
 	"github.com/imxw/miniokr/internal/pkg/errno"
 	"github.com/imxw/miniokr/internal/pkg/known"
@@ -43,8 +44,8 @@ func (ctrl *Controller) CreateKeyResult(c *gin.Context) {
 
 	// 转换
 	kr := model.KeyResult{
-		Title:       req.Title,
-		Owner:       username,
+		Title: req.Title,
+		// Owner:       username,
 		Date:        date,
 		Weight:      req.Weight,
 		Completed:   req.Completed,
@@ -52,6 +53,32 @@ func (ctrl *Controller) CreateKeyResult(c *gin.Context) {
 		Reason:      req.Reason,
 		ObjectiveID: trimIDPrefix(req.ObjectiveID),
 		Criteria:    req.Criteria,
+	}
+
+	if req.UserId != "" {
+		// 校验权限
+		userID, ok := c.MustGet(known.XUserIDKey).(string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserId, ctrl.us) {
+			return
+		}
+		// 查询目标用户名
+		user, err := ctrl.us.GetUserByID(c, req.UserId)
+		if err != nil {
+			core.WriteResponse(c, errno.ErrUserNotFound, nil)
+			return
+		}
+		kr.Owner = user.Name
+	} else {
+		kr.Owner = username
 	}
 
 	id, err := ctrl.os.CreateKeyResult(c, kr)
@@ -94,8 +121,8 @@ func (ctrl *Controller) UpdateKeyResult(c *gin.Context) {
 
 	// 转换
 	kr := model.KeyResult{
-		Title:       req.Title,
-		Owner:       username,
+		Title: req.Title,
+		// Owner:       username,
 		Date:        date,
 		Weight:      req.Weight,
 		Completed:   req.Completed,
@@ -104,6 +131,36 @@ func (ctrl *Controller) UpdateKeyResult(c *gin.Context) {
 		ObjectiveID: trimIDPrefix(req.ObjectiveID),
 		Criteria:    req.Criteria,
 		ID:          trimIDPrefix(uriParam.ID),
+	}
+
+	if req.UserId != "" {
+		// 校验权限
+		userID, ok := c.MustGet(known.XUserIDKey).(string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserId, ctrl.us) {
+			return
+		}
+		// 查询目标用户名
+		user, err := ctrl.us.GetUserByID(c, req.UserId)
+		if err != nil {
+			core.WriteResponse(c, errno.ErrUserNotFound, nil)
+			return
+		}
+		kr.Owner = user.Name
+	} else {
+		kr.Owner = username
+	}
+
+	if req.LeaderRating != nil {
+		kr.LeaderRating = req.LeaderRating
 	}
 
 	if err := ctrl.os.UpdateKeyResult(c, kr); err != nil {

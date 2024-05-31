@@ -26,17 +26,6 @@ func formatRecentMonths() []string {
 	}
 }
 
-// Contains checks if an element is present in a slice.
-// T is a type parameter constrained to types that are comparable.
-func Contains[T comparable](slice []T, element T) bool {
-	for _, v := range slice {
-		if v == element {
-			return true
-		}
-	}
-	return false
-}
-
 func intersectStrings(sliceA, sliceB []string) []string {
 	set := make(map[string]struct{}) // 使用空结构体节省内存
 	intersection := []string{}

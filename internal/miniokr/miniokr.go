@@ -25,14 +25,19 @@ import (
 	ac "github.com/imxw/miniokr/internal/miniokr/controller/v1/auth"
 	fc "github.com/imxw/miniokr/internal/miniokr/controller/v1/field"
 	oc "github.com/imxw/miniokr/internal/miniokr/controller/v1/okr"
+	syncv1 "github.com/imxw/miniokr/internal/miniokr/controller/v1/sync"
+	uc "github.com/imxw/miniokr/internal/miniokr/controller/v1/user"
 	"github.com/imxw/miniokr/internal/miniokr/services/auth"
 	fs "github.com/imxw/miniokr/internal/miniokr/services/field"
 	okrs "github.com/imxw/miniokr/internal/miniokr/services/okr"
+	users "github.com/imxw/miniokr/internal/miniokr/services/user"
+	"github.com/imxw/miniokr/internal/miniokr/store"
+	repo "github.com/imxw/miniokr/internal/miniokr/store"
 	"github.com/imxw/miniokr/internal/pkg/bitable"
 	"github.com/imxw/miniokr/internal/pkg/bitable/field"
 	larkToken "github.com/imxw/miniokr/internal/pkg/bitable/token"
-	"github.com/imxw/miniokr/internal/pkg/known"
 	"github.com/imxw/miniokr/internal/pkg/log"
+	"github.com/imxw/miniokr/internal/pkg/middleware"
 	mw "github.com/imxw/miniokr/internal/pkg/middleware"
 	"github.com/imxw/miniokr/pkg/token"
 	"github.com/imxw/miniokr/pkg/version/verflag"
@@ -97,6 +102,49 @@ Find more miniokr information at:
 
 // run 函数是实际的业务代码入口函数.
 func run() error {
+
+	// 初始化 store 层
+	db, err := initStore()
+	if err != nil {
+		return err
+	}
+
+	// 初始化钉钉客户端
+	dingClient, err := initDingTalkClient()
+	if err != nil {
+		log.Fatalw("Failed to initialize DingTalk client", "error", err)
+		return err
+	}
+
+	// 初始化同步服务
+	syncService, err := initSyncService(db, dingClient)
+	if err != nil {
+		log.Fatalw("Failed to initialize sync service", "error", err)
+		return err
+	}
+
+	// 立即运行一次同步任务
+	log.Infow("Running initial sync task...")
+	go func() {
+		ctx := context.Background()
+		if err := syncService.SyncDepartmentsAndUsers(ctx); err != nil {
+			log.Fatalw("Initial sync task failed", "error", err)
+		} else {
+			log.Infow("Initial sync task succeeded")
+			// 在同步后初始化角色和用户角色
+			if err := store.S.InitRoles(); err != nil {
+				log.Fatalw("Failed to initialize roles", "error", err)
+			}
+			if err := store.S.InitUserRoles(); err != nil {
+				log.Fatalw("Failed to initialize user roles", "error", err)
+			}
+		}
+	}()
+
+	// 启动定时任务
+	syncController := syncv1.NewSyncController(syncService)
+	go syncController.StartCronJob()
+
 	// 初始化钉钉服务
 	as, err := auth.NewDingTalkAuthService(auth.Config{
 		ClientId:     viper.GetString("dingtalk.client-id"),
@@ -104,6 +152,7 @@ func run() error {
 	})
 	if err != nil {
 		log.Fatalw("Failed to initialize DingTalk AuthService", "error", err)
+		return err
 	}
 
 	ctx := context.Background()
@@ -115,8 +164,8 @@ func run() error {
 	feishuToken := &larkToken.LarkTokenService{Client: client}
 
 	store := larkToken.NewTokenStorage()
-	//larkToken.NewTicker()
-	fm := larkToken.NewManager(feishuToken, store, nil, fsAppID, fsAppSecret)
+	clock := larkToken.NewRealClock()
+	fm := larkToken.NewManager(feishuToken, store, clock, fsAppID, fsAppSecret)
 	err = fm.Initialize(ctx)
 	if err != nil {
 		log.Fatalw("Failed to Initialize", "error", err)
@@ -140,16 +189,24 @@ func run() error {
 	// 初始化Okr服务
 	okrService, err := okrs.NewFeishuOkrService(oTableID, krTableID, fieldManager, rm)
 
+	// 初始化用户服务
+	userService := users.NewUserService(repo.S.Users())
+
 	container := &ServiceContainer{
 		AuthController:  ac.New(as),
 		FieldController: fc.New(fieldService),
-		OkrController:   oc.New(fieldService, okrService),
+		OkrController:   oc.New(fieldService, okrService, userService),
+		UserController:  uc.New(userService),
+	}
+
+	msc := &middleware.MiddlewareServiceContainer{
+		UserService: userService,
 	}
 
 	// 初始化飞书服务
 
 	// 设置 token 包的签发密钥，用于 token 包 token 的签发和解析
-	token.Init(viper.GetString("jwt.secret"), known.XUsernameKey, viper.GetDuration("jwt.expiration"))
+	token.Init(viper.GetString("jwt.secret"), viper.GetDuration("jwt.expiration"))
 
 	// 设置 Gin 模式
 	gin.SetMode(viper.GetString("runmode"))
@@ -168,7 +225,7 @@ func run() error {
 
 	g.Use(mws...)
 
-	if err := installRouters(g, container); err != nil {
+	if err := installRouters(g, container, msc); err != nil {
 		return err
 	}
 

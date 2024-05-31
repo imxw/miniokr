@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	ctrlV1 "github.com/imxw/miniokr/internal/miniokr/controller/v1"
 	"github.com/imxw/miniokr/internal/pkg/core"
 	"github.com/imxw/miniokr/internal/pkg/errno"
 	"github.com/imxw/miniokr/internal/pkg/known"
@@ -39,10 +40,37 @@ func (ctrl *Controller) CreateObjective(c *gin.Context) {
 
 	// 转换
 	objective := model.Objective{
-		Title:  req.Title,
-		Owner:  username,
+		Title: req.Title,
+		// Owner:  username,
 		Date:   req.Date,
 		Weight: req.Weight,
+	}
+
+	if req.UserId != "" {
+
+		// 校验权限
+		userID, ok := c.MustGet(known.XUserIDKey).(string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserId, ctrl.us) {
+			return
+		}
+		// 查询目标用户名
+		user, err := ctrl.us.GetUserByID(c, req.UserId)
+		if err != nil {
+			core.WriteResponse(c, errno.ErrUserNotFound, nil)
+			return
+		}
+		objective.Owner = user.Name
+	} else {
+		objective.Owner = username
 	}
 
 	id, err := ctrl.os.CreateObjective(c, objective)
@@ -81,11 +109,37 @@ func (ctrl *Controller) UpdateObjective(c *gin.Context) {
 
 	// 转换
 	objective := model.Objective{
-		Title:  req.Title,
-		Owner:  username,
+		Title: req.Title,
+		// Owner:  username,
 		Date:   req.Date,
 		Weight: req.Weight,
 		ID:     trimIDPrefix(uriParam.ID),
+	}
+
+	if req.UserId != "" {
+		// 校验权限
+		userID, ok := c.MustGet(known.XUserIDKey).(string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserId, ctrl.us) {
+			return
+		}
+		// 查询目标用户名
+		user, err := ctrl.us.GetUserByID(c, req.UserId)
+		if err != nil {
+			core.WriteResponse(c, errno.ErrUserNotFound, nil)
+			return
+		}
+		objective.Owner = user.Name
+	} else {
+		objective.Owner = username
 	}
 
 	err := ctrl.os.UpdateObjective(c, objective)
@@ -111,6 +165,26 @@ func (ctrl *Controller) DeleteObjective(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrBind, nil)
 		return
 	}
+
+	if req.UserId != "" {
+		// 校验权限
+		userID, ok := c.MustGet(known.XUserIDKey).(string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		roles, ok := c.MustGet(known.UserRolesKey).([]string)
+		if !ok {
+			core.WriteResponse(c, errno.InternalServerError, nil)
+			return
+		}
+		if !ctrlV1.CheckPermission(c, userID, roles, req.UserId, ctrl.us) {
+			return
+		}
+
+	}
+
+	// TODO: 更加精细地检查权限，如O或KR的owner是不是自己或自己的下属
 
 	trimmedIDs := make([]string, len(req.KeyResultIDs))
 	for i, id := range req.KeyResultIDs {

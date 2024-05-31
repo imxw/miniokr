@@ -25,6 +25,12 @@ func convertToObjective(data []*larkbitable.AppTableRecord, of *v1.ObjectiveFiel
 		}
 		fields := record.Fields
 
+		// 安全提取 Title 字段
+		title, ok := fields[of.Title].([]interface{})
+		if !ok {
+			title = []interface{}{} // 默认为空切片，避免 panic
+		}
+
 		objective := model.Objective{
 			ID:               OPrefix + *record.RecordId,
 			Owner:            extractText(fields[of.Owner].([]interface{})),
@@ -33,7 +39,8 @@ func convertToObjective(data []*larkbitable.AppTableRecord, of *v1.ObjectiveFiel
 			KrsIds:           extractRecordIDs(fields, of.KeyResultIDs, KrPrefix),
 			CreatedTime:      safeInt64(record.CreatedTime),
 			LastModifiedTime: safeInt64(record.LastModifiedTime),
-			Title:            extractText(fields[of.Title].([]interface{})),
+			//Title:            extractText(fields[of.Title].([]interface{})),
+			Title: extractText(title),
 		}
 		objectives = append(objectives, objective)
 	}
@@ -77,7 +84,7 @@ func convertToKeyResult(data []*larkbitable.AppTableRecord, of *v1.KeyResultFiel
 
 		kr := model.KeyResult{
 			ID:               KrPrefix + *record.RecordId,
-			Owner:            extractString(fields, of.Owner),
+			Owner:            extractText(fields[of.Owner].([]interface{})),
 			Date:             extractString(fields, of.Date),
 			Weight:           extractFloatToInt(fields, of.Weight),
 			Completed:        extractString(fields, of.Completed),

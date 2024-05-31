@@ -7,9 +7,9 @@ package v1
 
 // ListOkrResquest 指定了 `GET|POST /api/v1/okrs` 接口的请求参数.
 type ListOkrRequest struct {
-	// Username string   `form:"username"`
 	Months  []string `json:"months" form:"months" binding:"omitempty,dive,monthYearFormat"`
 	SortBy  string   `json:"sortBy" form:"sortBy" binding:"omitempty"`
+	UserID  string   `json:"userId" form:"userId" binding:"omitempty"`
 	OrderBy string   `json:"orderBy" form:"orderBy" binding:"omitempty"`
 }
 
@@ -50,7 +50,8 @@ type KeyResult struct {
 type CreateOrUpdateObjective struct {
 	Title  string `json:"title" binding:"required"`
 	Date   string `json:"date" binding:"required,monthYearFormat"`
-	Weight int    `json:"weight" binding:"min=1,max=100"`
+	Weight int    `json:"weight" binding:"omitempty,min=0,max=100"`
+	UserId string `json:"userId,omitempty"`
 }
 
 type CreateObjectiveResponse struct {
@@ -61,19 +62,22 @@ type CreateKeyResultResponse struct {
 }
 
 type CreateOrUpdateKeyResult struct {
-	Title       string `json:"title" binding:"required"`
-	Weight      int    `json:"weight" binding:"required,min=1,max=100"`
-	Date        string `json:"date" binding:"required,monthYearFormat"`
-	Completed   string `json:"completed" binding:"required,oneof=未开始 已完成 未完成"`
-	SelfRating  *int   `json:"selfRating" binding:"omitempty,min=0,max=120"`
-	Reason      string `json:"reason" binding:"omitempty"`
-	ObjectiveID string `json:"objectiveID" binding:"omitempty"`
-	Criteria    string `json:"criteria" binding:"omitempty"`
+	Title        string `json:"title" binding:"required"`
+	Weight       int    `json:"weight" binding:"required,min=1,max=100"`
+	Date         string `json:"date" binding:"required,monthYearFormat"`
+	Completed    string `json:"completed" binding:"required,oneof=未开始 已完成 未完成"`
+	SelfRating   *int   `json:"selfRating" binding:"omitempty,min=0,max=120"`
+	Reason       string `json:"reason" binding:"omitempty"`
+	LeaderRating *int   `json:"leaderRating,omitempty" binding:"omitempty"`
+	UserId       string `json:"userId" binding:"omitempty"`
+	ObjectiveID  string `json:"objectiveID" binding:"omitempty"`
+	Criteria     string `json:"criteria" binding:"omitempty"`
 }
 
 type DeleteObjectiveReq struct {
 	DeleteRecordReq
 	KeyResultIDs []string `json:"keyResultIds"` // 从 JSON 请求体绑定关键结果的 IDs
+	UserId       string   `json:"userId,omitempty"`
 }
 
 type DeleteRecordReq struct {

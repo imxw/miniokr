@@ -32,13 +32,13 @@ func (ctrl *Controller) Auth(c *gin.Context) {
 		core.WriteResponse(c, errno.ErrBind, nil)
 		return
 	}
-	username, err := ctrl.a.Fetch(c, r.AuthCode)
+	userid, username, err := ctrl.a.Fetch(c, r.AuthCode)
 	if err != nil {
 		core.WriteResponse(c, err, nil)
 		return
 	}
 
-	token, err := ctrl.a.IssueToken(c, username)
+	token, err := ctrl.a.IssueToken(c, userid, username)
 	log.C(c).Infow("获取用户token", "token", token, "username", username)
 	if err != nil {
 		core.WriteResponse(c, err, nil)

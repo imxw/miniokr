@@ -8,13 +8,15 @@ package okr
 import (
 	"github.com/imxw/miniokr/internal/miniokr/services/field"
 	"github.com/imxw/miniokr/internal/miniokr/services/okr"
+	"github.com/imxw/miniokr/internal/miniokr/services/user"
 )
 
 type Controller struct {
 	fs field.Service
 	os okr.Service
+	us user.Service
 }
 
-func New(fs field.Service, os okr.Service) *Controller {
-	return &Controller{fs: fs, os: os}
+func New(fs field.Service, os okr.Service, us user.Service) *Controller {
+	return &Controller{fs: fs, os: os, us: us}
 }

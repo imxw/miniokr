@@ -9,10 +9,12 @@ import (
 	"github.com/imxw/miniokr/internal/miniokr/controller/v1/auth"
 	"github.com/imxw/miniokr/internal/miniokr/controller/v1/field"
 	"github.com/imxw/miniokr/internal/miniokr/controller/v1/okr"
+	"github.com/imxw/miniokr/internal/miniokr/controller/v1/user"
 )
 
 type ServiceContainer struct {
 	AuthController  *auth.Controller
 	FieldController *field.Controller
 	OkrController   *okr.Controller
+	UserController  *user.Controller
 }

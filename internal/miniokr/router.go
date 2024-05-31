@@ -15,15 +15,12 @@ import (
 )
 
 // installRouters 安装 miniokr 接口路由.
-func installRouters(g *gin.Engine, sc *ServiceContainer) error {
+func installRouters(g *gin.Engine, sc *ServiceContainer, msc *middleware.MiddlewareServiceContainer) error {
 
 	g.Static("/static", "./frontend/build/static")
 	// 将首页路由到React的入口HTML
 	g.GET("/", func(c *gin.Context) {
 		c.File("./frontend/build/index.html")
-	})
-	g.GET("/listOkrs.json", func(c *gin.Context) {
-		c.File("./frontend/build/listOkrs.json")
 	})
 	g.NoRoute(func(c *gin.Context) {
 		c.File("./frontend/build/index.html")
@@ -47,7 +44,7 @@ func installRouters(g *gin.Engine, sc *ServiceContainer) error {
 	// 创建v1路由分组
 	v1 := g.Group("/api/v1")
 	v1.POST("/auth/dingtalk", sc.AuthController.Auth)
-	v1.Use(middleware.Authn())
+	v1.Use(middleware.Authn(msc))
 	v1.GET("/fields", sc.FieldController.List)
 	v1.GET("/okrs", sc.OkrController.ListOkrByUsernameAndMonths)
 	v1.POST("/okrs", sc.OkrController.ListOkrByUsernameAndMonths)
@@ -57,6 +54,10 @@ func installRouters(g *gin.Engine, sc *ServiceContainer) error {
 	v1.POST("/keyresults", sc.OkrController.CreateKeyResult)
 	v1.PUT("/keyresults/:id", sc.OkrController.UpdateKeyResult)
 	v1.DELETE("/keyresults/:id", sc.OkrController.DeleteKeyResult)
+	// v1.GET("/users", sc.UserController.GetUser)
+	v1.GET("/users/:id/departments/tree", sc.UserController.GetUserDepartmentsTree)
+	v1.GET("/user/departments/tree", sc.UserController.GetDepartmentsTree)
+	v1.GET("/me", sc.UserController.GetCurrentUser)
 
 	return nil
 }

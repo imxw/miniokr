@@ -38,3 +38,8 @@ type realClock struct{}
 func (rc *realClock) NewTicker(d time.Duration) Ticker {
 	return &realTicker{Ticker: time.NewTicker(d)}
 }
+
+// NewRealClock 创建一个新的 realClock 实例
+func NewRealClock() Clock {
+	return &realClock{}
+}

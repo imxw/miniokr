@@ -7,12 +7,12 @@ package auth
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/zhaoyunxing92/dingtalk/v2"
 	"github.com/zhaoyunxing92/dingtalk/v2/request"
 
 	"github.com/imxw/miniokr/internal/pkg/errno"
+	"github.com/imxw/miniokr/internal/pkg/known"
 	"github.com/imxw/miniokr/internal/pkg/log"
 	"github.com/imxw/miniokr/pkg/token"
 )
@@ -41,28 +41,33 @@ func NewDingTalkAuthService(cfg Config) (*DingTalkAuthService, error) {
 	}, nil
 }
 
-// Fetch 获取钉钉组织内用户姓名
-func (d *DingTalkAuthService) Fetch(ctx context.Context, code string) (string, error) {
+// Fetch 获取钉钉组织内用户id和姓名
+func (d *DingTalkAuthService) Fetch(ctx context.Context, code string) (string, string, error) {
 
 	userinfo, err := d.client.GetUserInfoByCode(code)
 	if err != nil {
 		log.Errorw("[d.client.GetUserInfoByCode] Failed to fetch userinfo", "err", err)
-		return "", err
+		return "", "", err
 	}
 
 	userDetailRequest := request.NewUserDetail(userinfo.UserInfo.UserId).Build()
 	userDetail, err := d.client.GetUserDetail(userDetailRequest)
 	if err != nil {
 		log.Errorw("[d.client.GetUserDetail] Failed to fetch user detail", "userID", userinfo.UserInfo.UserId, "err", err)
-		return "", err
+		return "", "", err
 	}
 
-	return userDetail.Name, nil
+	return userinfo.UserInfo.UserId, userDetail.Name, nil
 }
 
-func (d *DingTalkAuthService) IssueToken(ctx context.Context, username string) (string, error) {
+func (d *DingTalkAuthService) IssueToken(ctx context.Context, userid string, username string) (string, error) {
 
-	t, err := token.Sign(username)
+	claims := map[string]interface{}{
+		known.XUserIDKey:   userid,
+		known.XUsernameKey: username,
+	}
+
+	t, err := token.Sign(claims)
 	if err != nil {
 		return "", errno.ErrSignToken
 	}
@@ -70,10 +75,10 @@ func (d *DingTalkAuthService) IssueToken(ctx context.Context, username string) (
 }
 
 // 一个用于检查和获取映射值的辅助函数
-func getMappingValue(mapping map[string]string, key string) (string, error) {
-	value, ok := mapping[key]
-	if !ok {
-		return "", fmt.Errorf("required field '%s' is missing from the mapping", key)
-	}
-	return value, nil
-}
+// func getMappingValue(mapping map[string]string, key string) (string, error) {
+// 	value, ok := mapping[key]
+// 	if !ok {
+// 		return "", fmt.Errorf("required field '%s' is missing from the mapping", key)
+// 	}
+// 	return value, nil
+// }

@@ -173,6 +173,10 @@ func (f *FeishuOkrService) UpdateKeyResult(ctx context.Context, keyResult model.
 	fields[friendlyMapping.Reason] = keyResult.Reason
 	fields[friendlyMapping.Criteria] = keyResult.Criteria
 
+	if keyResult.LeaderRating != nil {
+		fields[friendlyMapping.LeaderRating] = keyResult.LeaderRating
+	}
+
 	// TODO: 单独处理
 	if keyResult.ObjectiveID != "" {
 
